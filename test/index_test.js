@@ -10,16 +10,16 @@ RemoteError.prototype = Object.create(HttpError.prototype, {
 
 describe("HttpError", function() {
   describe("new", function() {
+    it("must support no arguments and default to code 400", function() {
+      new HttpError().code.must.equal(400)
+    })
+
     it("must be an instance of HttpError", function() {
       new HttpError(400).must.be.an.instanceof(HttpError)
     })
 
     it("must set code", function() {
       new HttpError(404).code.must.equal(404)
-    })
-
-    it("must throw TypeError given undefined code", function() {
-      !function() { new HttpError(undefined) }.must.throw(TypeError, /HTTP/)
     })
 
     it("must throw TypeError given null code", function() {
