@@ -1,6 +1,7 @@
-var $ = require("oolong")
-var STATUS_NAMES = require("http-codes")
+var O = require("oolong")
 var HttpError = require("..")
+var isVersion = require("semver").satisfies.bind(null, process.version)
+var describeNodeV4 = isVersion(">= 4 < 5") ? describe : xdescribe
 
 function RemoteError(code, msg) { HttpError.apply(this, arguments) }
 
@@ -154,13 +155,31 @@ describe("HttpError", function() {
   })
 
   describe("HTTP status codes", function() {
-    // Fail safes:
-    STATUS_NAMES.must.have.property("NOT_FOUND", 404)
-    STATUS_NAMES.must.have.property("INTERNAL_SERVER_ERROR", 500)
+    it("must have NOT_FOUND equal 404", function() {
+      HttpError.must.have.property("NOT_FOUND", 404)
+    })
 
-    $.each(STATUS_NAMES, function(code, constant) {
-      it("must have " + constant + " equal " + code, function() {
-        HttpError[constant].must.equal(code)
+    it("must have INTERNAL_SERVER_ERROR equal 500", function() {
+      HttpError.must.have.property("INTERNAL_SERVER_ERROR", 500)
+    })
+
+    // Changed between Node v0.12 and Node v4.
+    it("must have FOUND equal 302", function() {
+      HttpError.must.have.property("FOUND", 302)
+      new HttpError(302).message.must.equal("Found")
+    })
+
+    describeNodeV4("when on Node v4", function() {
+      var STATUS_NAMES = require("http-codes")
+
+      // Fail safes:
+      STATUS_NAMES.must.have.property("NOT_FOUND", 404)
+      STATUS_NAMES.must.have.property("INTERNAL_SERVER_ERROR", 500)
+
+      O.each(STATUS_NAMES, function(code, name) {
+        it("must have " + name + " equal " + code, function() {
+          HttpError[name].must.equal(code)
+        })
       })
     })
   })

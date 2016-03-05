@@ -12,9 +12,12 @@ function HttpError(code, msg, props) {
   this.code = code
 }
 
-HttpError.prototype = Object.create(Error.prototype, {
+HttpError.prototype = Object.create(StandardError.prototype, {
   constructor: {value: HttpError, configurable: true, writable: true}
 })
+
+// Set name explicitly for when the code gets minified.
+HttpError.prototype.name = "HttpError"
 
 Object.defineProperties(HttpError.prototype, {
   statusCode: alias("code"),
